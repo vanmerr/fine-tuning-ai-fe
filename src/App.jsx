@@ -1,14 +1,26 @@
 import { API_URL } from "./api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Message from "./Message";
 import Response from "./Response";
 import Upload from "./Upload";
 import axios from "axios";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 
 function App() {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Kết nối server khi load trang
+  useEffect(() => {
+    toast.info("Connecting to server...");
+    axios.get(`${API_URL}/api/ping`)
+      .then(() => {
+        toast.success("Connected to server successfully");
+      })
+      .catch(() => {
+        toast.error("Failed to connect to server");
+      });
+  }, []);
 
   // Xử lý gửi câu hỏi
   const handleSend = async (text) => {
@@ -24,21 +36,30 @@ function App() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center ml-0 md:mr-[250px]">
-      <Toaster richColors position="top-center"/>
+    <div className="fixed inset-0 flex items-center justify-center  md:mr-[250px]">
+      <Toaster
+        richColors
+        position="top-right"
+        toastOptions={{
+          style: {
+            maxWidth: "95vw",
+            margin: "0 auto",
+          },
+        }}
+      />
       <div
         className="
-          w-full max-w-[500px] h-[90vh] bg-gray-100 rounded-2xl shadow-lg overflow-hidden
+          w-full max-w-[500px] h-[100vh] bg-gray-100 rounded-none md:rounded-2xl shadow-lg overflow-hidden
           flex flex-col
-          sm:w-[90vw] sm:max-w-[500px]
+          sm:w-[95vw] sm:max-w-[500px]
           md:w-[500px] md:h-[90%]
         "
       >
-        <header className="p-4 bg-violet-600 text-white font-semibold text-xl text-center select-none">
+        <header className="p-3 sm:p-4 bg-violet-600 text-white font-semibold text-lg sm:text-xl text-center select-none">
           Fine-tuning Chat (.docx, .pdf, .xlsx)
         </header>
         <div
-          className="flex-1 p-2 sm:p-3 overflow-y-auto"
+          className="flex-1 p-1 sm:p-3 overflow-y-auto"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           <style>
@@ -52,7 +73,7 @@ function App() {
             <Response loading={loading} text={answer} />
           </div>
         </div>
-        <div className="flex items-center px-2 pb-2 pt-1 gap-2 bg-gray-100">
+        <div className="flex items-center px-1 sm:px-2 pb-2 pt-1 gap-2 bg-gray-100">
           <Upload />
           <Message onSend={handleSend} />
         </div>
