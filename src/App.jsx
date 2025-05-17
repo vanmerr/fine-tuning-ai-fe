@@ -10,19 +10,20 @@ function App() {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Kết nối server khi load trang
   useEffect(() => {
-    toast.info("Connecting to server...");
+    // Hiển thị toast và lưu lại id
+    const toastId = toast.loading("Connecting to server...");
     axios.get(`${API_URL}/api/ping`)
       .then(() => {
         toast.success("Connected to server successfully");
+        toast.dismiss(toastId); // Ẩn toast khi thành công
       })
       .catch(() => {
         toast.error("Failed to connect to server");
+        toast.dismiss(toastId); // Ẩn toast khi lỗi
       });
   }, []);
 
-  // Xử lý gửi câu hỏi
   const handleSend = async (text) => {
     setLoading(true);
     setAnswer("");
